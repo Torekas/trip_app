@@ -11,6 +11,7 @@ from items.routes import items_bp
 from flask_wtf import CSRFProtect
 
 import certifi
+import ssl
 
 # App factory
 def create_app() -> Flask:
@@ -29,14 +30,17 @@ def create_app() -> Flask:
     client = MongoClient(
         app.config["MONGO_URI"],
         tls=True,
-        tlsCAFile=ca,
+        tlsCAFile=certifi.where(),
+        # ALLOW invalid certs (insecure! only for testing)
+        # OR equivalently:
+        tlsAllowInvalidCertificates=True,
         serverSelectionTimeoutMS=app.config["MONGO_TIMEOUT_MS"],
         server_api=ServerApi("1")
     )
     try:
         client.server_info()
         logger.info("✅ Connected to MongoDB Atlas!")
-    except Exception as e:
+    except Exception:
         logger.exception("❌ Could not connect to MongoDB:")
         raise
 
