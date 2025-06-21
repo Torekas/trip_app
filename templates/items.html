@@ -205,6 +205,13 @@
       </div>
     {% endif %}
 
+    <!-- Download current list as Excel -->
+    <div style="text-align:center; margin:1rem 0;">
+      <a href="{{ url_for('items.download_packing_list') }}" class="btn save">
+        Download Excel
+      </a>
+    </div>
+
     <!-- Clear All -->
     <div style="text-align:center; margin-top:1.5rem;">
       <button id="clear-btn" class="btn delete">Clear All</button>

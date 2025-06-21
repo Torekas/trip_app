@@ -5,36 +5,57 @@
   <title>{% block title %}Flask App{% endblock %}</title>
   <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
     /* FULL-WIDTH LAYOUT OVERRIDE */
     body, main {
       max-width: none !important;
       width: 100% !important;
       margin: 0;
       padding: 0;
+      background: #000;
+      color: #0ff;
+      font-family: 'Orbitron', sans-serif;
     }
     main {
-      padding: 1em 2em;
+      padding: 1rem 2rem;
     }
     nav {
-      padding: 0.5em 2em;
-      background: #004080;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 2rem;
+      background: linear-gradient(135deg, #001f3f, #003366);
+      box-shadow: 0 0 20px #00ffff;
     }
-    /* Button styles for nav links */
+    /* Futuristic nav buttons */
     .nav-btn {
       display: inline-block;
-      margin: 0 0.5em;
+      min-width: 100px;
+      margin: 0 0.3em;
       padding: 0.4em 0.8em;
-      background: #fff;
-      color: #004080;
-      border-radius: 3px;
+      background: linear-gradient(45deg, #00ffff, #0066ff);
+      color: #000;
+      border: 2px solid #0ff;
+      border-radius: 50px;
+      text-align: center;
       text-decoration: none;
-      font-weight: bold;
-      transition: background 0.2s;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow:
+        0 0 10px #00ffff,
+        inset 0 0 5px rgba(255,255,255,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-size: 0.85em;
     }
     .nav-btn:hover {
-      background: #e0e0e0;
+      transform: scale(1.05);
+      box-shadow:
+        0 0 15px #00ffff,
+        inset 0 0 6px rgba(255,255,255,0.7);
+      background: linear-gradient(45deg, #55ffff, #3399ff);
+      color: #000;
     }
-    /* Hide inline alerts (we use popups elsewhere) */
+    /* Hide inline alerts */
     .alert { display: none !important; }
   </style>
 </head>
@@ -44,12 +65,15 @@
     {% if current_user.is_authenticated %}
       <a class="nav-btn" href="{{ url_for('items.list_items') }}">My Items</a>
       <a class="nav-btn" href="{{ url_for('items.upload') }}">Upload Excel</a>
+      <a class="nav-btn" href="{{ url_for('items.download_packing_list') }}">Download Excel</a>
+      <a class="nav-btn" href="https://settlement-mini-app.onrender.com" target="_blank" rel="noopener noreferrer">Settlement Mini App</a>
       <a class="nav-btn" href="{{ url_for('auth.logout') }}">Logout</a>
     {% else %}
       <a class="nav-btn" href="{{ url_for('auth.login') }}">Login</a>
       <a class="nav-btn" href="{{ url_for('auth.register') }}">Register</a>
     {% endif %}
   </nav>
+
   <main>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}

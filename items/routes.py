@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from flask import (
     Blueprint, render_template, redirect, url_for, flash,
-    current_app, request, jsonify
+    current_app, request, jsonify, send_file
 )
 from flask_login import login_required, current_user
 from bson import ObjectId
@@ -194,3 +194,57 @@ def upload():
         return redirect(url_for("items.list_items"))
 
     return render_template("upload.html", form=form)
+
+
+@items_bp.route("/download", methods=["GET"])
+@login_required
+def download_packing_list():
+    """
+    Rebuild the Excel file in-memory from the current user's items,
+    grouping by category into columns, and download 1:1.
+    """
+    # 1) Fetch & parse
+    raw_items = list(current_app.items_col.find({
+        "user_id": ObjectId(current_user.id)
+    }))
+    pattern = re.compile(r"\s*x\s*(\d+)$", flags=re.IGNORECASE)
+    grouped: dict[str, list[str]] = {}
+    for it in raw_items:
+        raw_name = it["item_name"]
+        m = pattern.search(raw_name)
+        if m:
+            name = pattern.sub("", raw_name).strip()
+            qty = int(m.group(1))
+            entry = f"{name} x {qty}"
+        else:
+            entry = raw_name
+        grouped.setdefault(it["category"], []).append(entry)
+
+    # 2) Build DataFrame: one column per category
+    if grouped:
+        max_len = max(len(lst) for lst in grouped.values())
+        padded = {
+            cat: lst + [""] * (max_len - len(lst))
+            for cat, lst in grouped.items()
+        }
+        df = pd.DataFrame(padded)
+    else:
+        df = pd.DataFrame()
+
+    # 3) Write to an in-memory Excel
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Packing List")
+    output.seek(0)
+
+    # 4) Stream it back
+    filename = f"{current_user.username}_packing_list.xlsx"
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=filename,                     # <-- changed here
+        mimetype=(
+            "application/vnd.openxmlformats-officedocument"
+            ".spreadsheetml.sheet"
+        )
+    )

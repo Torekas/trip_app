@@ -10,6 +10,9 @@ from items.routes import items_bp
 
 from flask_wtf import CSRFProtect
 
+import certifi
+import ssl
+
 # App factory
 def create_app() -> Flask:
     app = Flask(__name__, template_folder="templates")
@@ -22,17 +25,23 @@ def create_app() -> Flask:
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    # Initialize MongoDB (no explicit cert settings)
+    # Initialize MongoDB
+    ca = certifi.where()
     client = MongoClient(
-        app.config["MONGO_URI"],                # e.g. mongodb+srv://...
+        app.config["MONGO_URI"],
+        tls=True,
+        tlsCAFile=certifi.where(),
+        # ALLOW invalid certs (insecure! only for testing)
+        # OR equivalently:
+        tlsAllowInvalidCertificates=True,
         serverSelectionTimeoutMS=app.config["MONGO_TIMEOUT_MS"],
         server_api=ServerApi("1")
     )
     try:
         client.server_info()
         logger.info("✅ Connected to MongoDB Atlas!")
-    except Exception as e:
-        logger.warning("⚠️ Initial MongoDB check failed: %s", e)
+    except Exception:
+        logger.exception("❌ Could not connect to MongoDB:")
         raise
 
     # Attach DB to config
