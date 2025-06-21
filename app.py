@@ -10,9 +10,6 @@ from items.routes import items_bp
 
 from flask_wtf import CSRFProtect
 
-import certifi
-import ssl
-
 # App factory
 def create_app() -> Flask:
     app = Flask(__name__, template_folder="templates")
@@ -25,15 +22,9 @@ def create_app() -> Flask:
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    # Initialize MongoDB
-    ca = certifi.where()
+    # Initialize MongoDB (no explicit cert settings)
     client = MongoClient(
-        app.config["MONGO_URI"],
-        tls=True,
-        tlsCAFile=certifi.where(),
-        # ALLOW invalid certs (insecure! only for testing)
-        # OR equivalently:
-        tlsAllowInvalidCertificates=True,
+        app.config["MONGO_URI"],                # e.g. mongodb+srv://...
         serverSelectionTimeoutMS=app.config["MONGO_TIMEOUT_MS"],
         server_api=ServerApi("1")
     )
