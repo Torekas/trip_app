@@ -10,6 +10,8 @@ from items.routes import items_bp
 
 from flask_wtf import CSRFProtect
 
+import certifi
+
 # App factory
 def create_app() -> Flask:
     app = Flask(__name__, template_folder="templates")
@@ -23,13 +25,16 @@ def create_app() -> Flask:
     logger = logging.getLogger(__name__)
 
     # Initialize MongoDB
+    ca = certifi.where()
     client = MongoClient(
         app.config["MONGO_URI"],
+        tls=True,
+        tlsCAFile=ca,
         serverSelectionTimeoutMS=app.config["MONGO_TIMEOUT_MS"],
         server_api=ServerApi("1")
     )
     try:
-        client.admin.command("ping")
+        client.server_info()
         logger.info("✅ Connected to MongoDB Atlas!")
     except Exception as e:
         logger.exception("❌ Could not connect to MongoDB:")
