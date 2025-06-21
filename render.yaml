@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: flask-mongo-config
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn wsgi:config
+    envVars:
+      - key: SECRET_KEY
+        fromDatabase: SECRET_KEY
+      - key: MONGODB_URI
+        fromDatabase: MONGODB_URI

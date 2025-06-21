@@ -1,0 +1,345 @@
+{% extends "layout.html" %}
+{% block title %}My Items{% endblock %}
+
+{% block content %}
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+    /* Full‐width container */
+    .full-width-wrapper {
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      width: 100vw;
+      padding: 1rem;
+      box-sizing: border-box;
+      background: #000; /* optional background */
+    }
+
+    body, .full-width-wrapper, h2, input, button {
+      font-family: 'Orbitron', sans-serif;
+      color: #0ff;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    /* Inline add form */
+    .add-item-inline {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .add-item-inline input {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid #0ff;
+      border-radius: 4px;
+      padding: 0.5em;
+      color: #0ff;
+      min-width: 100px;
+    }
+    .add-item-inline input::placeholder {
+      color: #55ffff;
+    }
+
+    /* Button base */
+    .btn {
+      background: linear-gradient(45deg, #00ffff, #0066ff);
+      color: #000;
+      border: none;
+      border-radius: 50px;
+      padding: 0.6em 1em;
+      font-size: 0.9em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow:
+        0 0 10px #00ffff,
+        inset 0 0 5px rgba(255,255,255,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow:
+        0 0 20px #00ffff,
+        inset 0 0 8px rgba(255,255,255,0.7);
+    }
+    .btn.save {
+      background: linear-gradient(45deg, #00ff00, #007700);
+      color: #000;
+    }
+    .btn.cancel {
+      background: linear-gradient(45deg, #ff9900, #cc7700);
+      color: #000;
+    }
+    .btn.delete {
+      background: linear-gradient(45deg, #ff0000, #aa0000);
+      color: #fff;
+    }
+
+    /* Categories grid */
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    /* Category panels */
+    .category-panel {
+      background: #111;
+      border: 1px solid #0ff;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      height: 380px;
+      overflow: hidden;
+    }
+    details > summary {
+      cursor: pointer;
+      padding: 0.6em;
+      background: #0ff;
+      color: #000;
+      font-weight: bold;
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] > summary::after { content: "▾"; float: right; }
+    details:not([open]) > summary::after { content: "▸"; float: right; }
+
+    /* Collapse animation */
+    .content {
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      max-height: 1000px;
+    }
+    details:not([open]) .content {
+      max-height: 0;
+    }
+
+    /* Table styling */
+    .category-panel table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.85em;
+      color: #0ff;
+    }
+    .category-panel thead, .category-panel tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+    .category-panel tbody {
+      display: block;
+      overflow-y: auto;
+      max-height: 290px;
+    }
+    .category-panel th, .category-panel td {
+      border: 1px solid #0ff;
+      padding: 0.4em;
+      word-wrap: break-word;
+    }
+    .category-panel th {
+      background: #004080;
+      color: #0ff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  </style>
+
+  <div class="full-width-wrapper">
+    <h2>My Items</h2>
+
+    <!-- Inline Add -->
+    <div class="add-item-inline">
+      <input id="new-category" placeholder="Category" />
+      <input id="new-name"     placeholder="Item name" />
+      <input id="new-qty" type="number" min="1" value="1" style="width:60px;" />
+      <button id="add-btn" class="btn">Add Item</button>
+    </div>
+
+    {% if not grouped %}
+      <p style="text-align:center; color:#aaa;">
+        No items yet. Use the form above to add your first one.
+      </p>
+    {% else %}
+      <div class="categories">
+        {% for category, items in grouped.items() %}
+          <details class="category-panel" open>
+            <summary>{{ category }} ({{ items|length }})</summary>
+            <div class="content">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item Name</th>
+                    <th style="width:60px; text-align:center;">Qty</th>
+                    <th style="width:140px; text-align:center;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in items %}
+                    <tr data-id="{{ item['_id'] }}">
+                      <td class="editable" data-field="parsed_name">{{ item.parsed_name }}</td>
+                      <td class="editable" data-field="parsed_quantity" style="text-align:center;">
+                        {{ item.parsed_quantity }}
+                      </td>
+                      <td style="text-align:center;">
+                        <button class="btn edit-btn">Edit</button>
+                        <button class="btn save-btn save" style="display:none;">Save</button>
+                        <button class="btn cancel-btn cancel" style="display:none;">Cancel</button>
+                        <button class="btn delete-btn delete">Delete</button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Clear All -->
+    <div style="text-align:center; margin-top:1.5rem;">
+      <button id="clear-btn" class="btn delete">Clear All</button>
+    </div>
+  </div>
+
+  <script>
+    const csrfToken = "{{ csrf_token() }}";
+    const addUrl    = "{{ url_for('items.add_item_api') }}";
+    const updateUrl = "{{ url_for('items.update_item_api', item_id='REPLACE_ID') }}";
+    const deleteUrl = "{{ url_for('items.delete_item_api', item_id='REPLACE_ID') }}";
+    const clearUrl  = "{{ url_for('items.clear_items') }}";
+
+    // Pop-up any flash messages
+    document.addEventListener('DOMContentLoaded', () => {
+      {% for cat, msg in get_flashed_messages(with_categories=true) %}
+        alert("{{ msg|e }}");
+      {% endfor %}
+    });
+
+    // Inline Add
+    document.getElementById("add-btn").addEventListener("click", async () => {
+      const category = document.getElementById("new-category").value.trim();
+      const item_name = document.getElementById("new-name").value.trim();
+      const quantity  = parseInt(document.getElementById("new-qty").value) || 1;
+      if (!category || !item_name) {
+        return alert("Category and item name are required.");
+      }
+      const resp = await fetch(addUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ category, item_name, quantity })
+      });
+      if (!resp.ok) {
+        const err = (await resp.json()).error || "Add failed";
+        return alert(err);
+      }
+      const newItem = await resp.json();
+      // Append to existing panel or reload
+      let panel = Array.from(document.querySelectorAll("details.category-panel"))
+        .find(d => d.querySelector("summary").innerText.startsWith(newItem.category));
+      if (!panel) return location.reload();
+      const tbody = panel.querySelector("tbody");
+      const tr = document.createElement("tr");
+      tr.dataset.id = newItem._id;
+      tr.innerHTML = `
+        <td class="editable" data-field="parsed_name">${newItem.parsed_name}</td>
+        <td class="editable" data-field="parsed_quantity" style="text-align:center;">
+          ${newItem.parsed_quantity}
+        </td>
+        <td style="text-align:center;">
+          <button class="btn edit-btn">Edit</button>
+          <button class="btn save-btn save" style="display:none;">Save</button>
+          <button class="btn cancel-btn cancel" style="display:none;">Cancel</button>
+          <button class="btn delete-btn delete">Delete</button>
+        </td>`;
+      tbody.appendChild(tr);
+      tr.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("new-name").value = "";
+      document.getElementById("new-qty").value  = "1";
+      attachRowHandlers(tr);
+    });
+
+    // Clear All
+    document.getElementById("clear-btn").addEventListener("click", async () => {
+      if (!confirm("Delete ALL items?")) return;
+      const resp = await fetch(clearUrl, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrfToken },
+        credentials: "same-origin"
+      });
+      if (resp.ok) location.reload();
+      else alert("Clear failed");
+    });
+
+    // Attach edit/delete/save/cancel handlers to a row
+    function attachRowHandlers(tr) {
+      tr.querySelector(".edit-btn").onclick = () => {
+        tr.querySelectorAll("td.editable").forEach(td => {
+          const input = document.createElement("input");
+          input.value = td.innerText.trim();
+          td.innerHTML = "";
+          td.appendChild(input);
+        });
+        tr.querySelector(".edit-btn").style.display = "none";
+        tr.querySelector(".delete-btn").style.display = "none";
+        tr.querySelector(".save-btn").style.display = "";
+        tr.querySelector(".cancel-btn").style.display = "";
+      };
+      tr.querySelector(".cancel-btn").onclick = () => location.reload();
+      tr.querySelector(".save-btn").onclick = async () => {
+        const id = tr.dataset.id;
+        const data = {};
+        tr.querySelectorAll("td.editable").forEach(td => {
+          const f = td.dataset.field;
+          const v = td.querySelector("input").value.trim();
+          data[f] = f === "parsed_quantity" ? Number(v) : v;
+        });
+        const resp = await fetch(updateUrl.replace("REPLACE_ID", id), {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+          },
+          credentials: "same-origin",
+          body: JSON.stringify(data)
+        });
+        if (!resp.ok) return alert("Update failed");
+        const res = await resp.json();
+        tr.querySelectorAll("td.editable").forEach(td => {
+          td.innerText = res[td.dataset.field];
+        });
+        tr.querySelector(".edit-btn").style.display = "";
+        tr.querySelector(".delete-btn").style.display = "";
+        tr.querySelector(".save-btn").style.display = "none";
+        tr.querySelector(".cancel-btn").style.display = "none";
+      };
+      tr.querySelector(".delete-btn").onclick = async () => {
+        if (!confirm("Delete this item?")) return;
+        const id = tr.dataset.id;
+        const resp = await fetch(deleteUrl.replace("REPLACE_ID", id), {
+          method: "DELETE",
+          headers: { "X-CSRFToken": csrfToken },
+          credentials: "same-origin"
+        });
+        if (resp.ok) tr.remove();
+        else alert("Delete failed");
+      };
+    }
+
+    // Initialize existing rows
+    document.querySelectorAll("tr[data-id]").forEach(attachRowHandlers);
+  </script>
+{% endblock %}

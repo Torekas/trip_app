@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}{{ action }} Item{% endblock %}
+{% block content %}
+  <h2>{{ action }} Item</h2>
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.category.label }}<br>
+      {{ form.category(size=32) }}
+    </p>
+    <p>
+      {{ form.item_name.label }}<br>
+      {{ form.item_name(size=32) }}
+    </p>
+    <p>
+      {{ form.quantity.label }}<br>
+      {{ form.quantity() }}
+    </p>
+    <p>{{ form.submit(label=action) }}</p>
+  </form>
+{% endblock %}
