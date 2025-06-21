@@ -40,7 +40,7 @@ def create_app() -> Flask:
     try:
         client.server_info()
         logger.info("✅ Connected to MongoDB Atlas!")
-    except Exception:
+    except Exception as e:
         logger.warning("⚠️ Initial MongoDB check failed: %s", e)
         raise
 
