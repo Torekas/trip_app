@@ -5,7 +5,11 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
-    /* Full‐width container */
+    body, .full-width-wrapper, h2, input, button {
+      font-family: 'Orbitron', sans-serif;
+      color: #0ff;
+    }
+
     .full-width-wrapper {
       position: relative;
       left: 50%;
@@ -13,136 +17,107 @@
       margin-left: -50vw;
       margin-right: -50vw;
       width: 100vw;
-      padding: 1rem;
+      padding: 1.5rem 0.5rem;
       box-sizing: border-box;
-      background: #000; /* optional background */
+      background: #000;
     }
 
-    body, .full-width-wrapper, h2, input, button {
-      font-family: 'Orbitron', sans-serif;
-      color: #0ff;
-    }
+    h2 { text-align: center; margin-bottom: 1.3rem; }
 
-    h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    /* Inline add form */
+    /* Add form */
     .add-item-inline {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
+      gap: 0.7rem;
+      margin-bottom: 2rem;
     }
     .add-item-inline input {
       background: rgba(255,255,255,0.1);
       border: 1px solid #0ff;
       border-radius: 4px;
-      padding: 0.5em;
+      padding: 0.85em 1em;
       color: #0ff;
-      min-width: 100px;
+      min-width: 120px;
+      font-size: 1.08em;
     }
-    .add-item-inline input::placeholder {
-      color: #55ffff;
-    }
+    .add-item-inline input::placeholder { color: #55ffff; }
 
-    /* Button base */
     .btn {
       background: linear-gradient(45deg, #00ffff, #0066ff);
       color: #000;
       border: none;
       border-radius: 50px;
-      padding: 0.6em 1em;
-      font-size: 0.9em;
+      padding: 0.85em 1.7em;
+      font-size: 1.08em;
       font-weight: 700;
       letter-spacing: 1px;
       cursor: pointer;
-      box-shadow:
-        0 0 10px #00ffff,
-        inset 0 0 5px rgba(255,255,255,0.5);
+      box-shadow: 0 0 10px #00ffff, inset 0 0 5px rgba(255,255,255,0.5);
       transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 0.2em;
     }
-    .btn:hover {
-      transform: scale(1.05);
-      box-shadow:
-        0 0 20px #00ffff,
-        inset 0 0 8px rgba(255,255,255,0.7);
-    }
-    .btn.save {
-      background: linear-gradient(45deg, #00ff00, #007700);
-      color: #000;
-    }
-    .btn.cancel {
-      background: linear-gradient(45deg, #ff9900, #cc7700);
-      color: #000;
-    }
-    .btn.delete {
-      background: linear-gradient(45deg, #ff0000, #aa0000);
-      color: #fff;
-    }
+    .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px #00ffff, inset 0 0 8px rgba(255,255,255,0.7);}
+    .btn.save { background: linear-gradient(45deg, #00ff00, #007700); color: #000;}
+    .btn.cancel { background: linear-gradient(45deg, #ff9900, #cc7700); color: #000;}
+    .btn.delete { background: linear-gradient(45deg, #ff0000, #aa0000); color: #fff;}
 
-    /* Categories grid */
+    /* Categories grid: 2 wide tiles, gap, and wider panels */
     .categories {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2.2rem;
+      margin-bottom: 2.5rem;
     }
-
-    /* Category panels */
     .category-panel {
       background: #111;
-      border: 1px solid #0ff;
-      border-radius: 6px;
+      border: 1.5px solid #0ff;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
-      height: 380px;
+      min-width: 0;
+      /* Wider and more prominent tile */
+      height: 460px;
+      box-shadow: 0 2px 32px #05eeee22;
       overflow: hidden;
     }
     details > summary {
       cursor: pointer;
-      padding: 0.6em;
+      padding: 1em 1.3em;
       background: #0ff;
       color: #000;
       font-weight: bold;
       list-style: none;
+      font-size: 1.18em;
+      letter-spacing: 1px;
     }
     details > summary::-webkit-details-marker { display: none; }
     details[open] > summary::after { content: "▾"; float: right; }
     details:not([open]) > summary::after { content: "▸"; float: right; }
 
-    /* Collapse animation */
     .content {
       overflow: hidden;
       transition: max-height 0.3s ease;
-      max-height: 1000px;
+      max-height: 1100px;
+      padding: 0 1em;
     }
-    details:not([open]) .content {
-      max-height: 0;
-    }
+    details:not([open]) .content { max-height: 0; padding: 0 1em;}
 
     /* Table styling */
     .category-panel table {
       border-collapse: collapse;
       width: 100%;
-      font-size: 0.85em;
+      font-size: 1em;
       color: #0ff;
+      margin-top: 0.2em;
     }
-    .category-panel thead, .category-panel tr {
-      display: table;
-      width: 100%;
-      table-layout: fixed;
-    }
-    .category-panel tbody {
-      display: block;
-      overflow-y: auto;
-      max-height: 290px;
-    }
+    .category-panel thead, .category-panel tr { display: table; width: 100%; table-layout: fixed; }
+    .category-panel tbody { display: block; overflow-y: auto; max-height: 320px; }
     .category-panel th, .category-panel td {
       border: 1px solid #0ff;
-      padding: 0.4em;
+      padding: 0.65em 0.6em;
       word-wrap: break-word;
+      font-size: 1em;
     }
     .category-panel th {
       background: #004080;
@@ -150,6 +125,78 @@
       position: sticky;
       top: 0;
       z-index: 1;
+      font-size: 1.04em;
+      letter-spacing: 0.5px;
+    }
+
+    /* --- mobile tweaks --- */
+    @media (max-width: 1100px) {
+      .categories { gap: 1.1rem; }
+      .category-panel { height: 430px; }
+    }
+    @media (max-width: 900px) {
+      .categories {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .category-panel { height: 380px; }
+    }
+    @media (max-width: 600px) {
+      .categories {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+      .category-panel {
+        min-width: 0;
+        width: 100%;
+        height: auto;
+      }
+      .category-panel table, .category-panel thead, .category-panel tbody, .category-panel tr {
+        display: block;
+        width: 100%;
+      }
+      .category-panel thead { display: none; }
+      .category-panel tr {
+        margin-bottom: 1rem;
+        background: #111;
+        border-radius: 5px;
+        box-shadow: 0 0 8px #011a1a40;
+        border: 1px solid #0ff;
+        padding: 0.7em 0.35em;
+        display: flex;
+        flex-direction: column;
+      }
+      .category-panel td {
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.48em 0.2em;
+        font-size: 1.08em;
+      }
+      .category-panel td::before {
+        content: attr(data-field);
+        font-weight: bold;
+        text-transform: capitalize;
+        color: #09c;
+        margin-right: 0.7em;
+        flex: 1 0 45%;
+      }
+      .category-panel td[data-field="parsed_quantity"]::before {
+        content: "Qty";
+      }
+      .category-panel td:last-child {
+        justify-content: flex-start;
+        gap: 0.7em;
+        margin-top: 0.25em;
+      }
+    }
+    @media (max-width: 400px) {
+      .add-item-inline { flex-direction: column; gap: 0.35em;}
+      .add-item-inline input, .btn { font-size: 1em; }
+      h2 { font-size: 1.05em; }
+      .category-panel { border-radius: 8px; }
     }
   </style>
 
@@ -185,7 +232,7 @@
                 <tbody>
                   {% for item in items %}
                     <tr data-id="{{ item['_id'] }}">
-                      <td class="editable" data-field="parsed_name">{{ item.parsed_name }}</td>
+                      <td class="editable" data-field="Item Name">{{ item.parsed_name }}</td>
                       <td class="editable" data-field="parsed_quantity" style="text-align:center;">
                         {{ item.parsed_quantity }}
                       </td>
@@ -262,7 +309,7 @@
       const tr = document.createElement("tr");
       tr.dataset.id = newItem._id;
       tr.innerHTML = `
-        <td class="editable" data-field="parsed_name">${newItem.parsed_name}</td>
+        <td class="editable" data-field="Item Name">${newItem.parsed_name}</td>
         <td class="editable" data-field="parsed_quantity" style="text-align:center;">
           ${newItem.parsed_quantity}
         </td>
@@ -310,7 +357,7 @@
         const id = tr.dataset.id;
         const data = {};
         tr.querySelectorAll("td.editable").forEach(td => {
-          const f = td.dataset.field;
+          const f = td.dataset.field === "Item Name" ? "parsed_name" : td.dataset.field;
           const v = td.querySelector("input").value.trim();
           data[f] = f === "parsed_quantity" ? Number(v) : v;
         });
@@ -326,7 +373,8 @@
         if (!resp.ok) return alert("Update failed");
         const res = await resp.json();
         tr.querySelectorAll("td.editable").forEach(td => {
-          td.innerText = res[td.dataset.field];
+          if (td.dataset.field === "Item Name") td.innerText = res["parsed_name"];
+          else td.innerText = res[td.dataset.field];
         });
         tr.querySelector(".edit-btn").style.display = "";
         tr.querySelector(".delete-btn").style.display = "";
